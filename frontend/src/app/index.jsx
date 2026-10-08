@@ -97,7 +97,7 @@ export default function WelcomeScreen() {
           <TouchableOpacity 
             style={styles.primaryBtn} 
             activeOpacity={0.8}
-            onPress={() => router.replace('/home')} 
+            onPress={() => router.push('/login')}
           >
             <Text style={styles.primaryBtnText}>Get Started</Text>
           </TouchableOpacity>
