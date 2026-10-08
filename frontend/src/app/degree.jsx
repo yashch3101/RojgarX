@@ -6,6 +6,7 @@ import {
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
+import BottomNav from '../components/BottomNav';
 
 const { width } = Dimensions.get('window');
 
@@ -260,25 +261,7 @@ export default function DegreeScreen() {
       </ScrollView>
 
       {/* BOTTOM NAVIGATION (Degree Active) */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/')}>
-          <Feather name="briefcase" size={22} color="#9CA3AF" />
-          <Text style={styles.navText}>Jobs</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/interview')}>
-          <MaterialCommunityIcons name="clipboard-text-outline" size={24} color="#9CA3AF" />
-          <Text style={styles.navText}>Interview</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/freelance')}>
-          <Feather name="monitor" size={22} color="#9CA3AF" />
-          <Text style={styles.navText}>Freelance</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <MaterialCommunityIcons name="school-outline" size={24} color="#FF6B00" />
-          <Text style={[styles.navText, { color: '#FF6B00' }]}>Degree</Text>
-          <View style={styles.activeNavIndicator} />
-        </TouchableOpacity>
-      </View>
+      <BottomNav />
     </View>
   );
 }

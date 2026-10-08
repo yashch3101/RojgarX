@@ -6,6 +6,7 @@ import {
 import { Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
+import BottomNav from '../components/BottomNav';
 
 const { width } = Dimensions.get('window');
 
@@ -279,25 +280,7 @@ export default function FreelanceScreen() {
       </ScrollView>
 
       {/* BOTTOM NAVIGATION (Freelance Active) */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/')}>
-          <Feather name="briefcase" size={22} color="#9CA3AF" />
-          <Text style={styles.navText}>Jobs</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/interview')}>
-          <MaterialCommunityIcons name="clipboard-text-outline" size={24} color="#9CA3AF" />
-          <Text style={styles.navText}>Interview</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Feather name="monitor" size={22} color="#FF6B00" />
-          <Text style={[styles.navText, { color: '#FF6B00' }]}>Freelance</Text>
-          <View style={styles.activeNavIndicator} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Feather name="award" size={22} color="#9CA3AF" />
-          <Text style={styles.navText}>Degree</Text>
-        </TouchableOpacity>
-      </View>
+      <BottomNav />
     </View>
   );
 }

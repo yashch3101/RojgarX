@@ -1,191 +1,116 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { 
-  StyleSheet, Text, View, ScrollView, TextInput, 
-  Image, TouchableOpacity, Dimensions, StatusBar, Platform
+  StyleSheet, Text, View, Image, TouchableOpacity, 
+  Dimensions, StatusBar, Platform 
 } from 'react-native';
-import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import Animated, { 
+  FadeInDown, FadeInUp, ZoomIn, 
+  useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing 
+} from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 
-const filters = ['All', '✨ For You', '📶 Remote', '🏢 On-site'];
-const jobs = [
-  {
-    id: '1',
-    company: 'Google',
-    role: 'Backend Developer',
-    salary: '₹12 - 18 LPA',
-    location: 'Bengaluru, India',
-    time: '2h ago',
-    tags: ['Full Time', 'Backend', 'Java'],
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1024px-Google_%22G%22_Logo.svg.png'
-  },
-  {
-    id: '2',
-    company: 'Microsoft',
-    role: 'Software Engineer',
-    salary: '₹15 - 25 LPA',
-    location: 'Hyderabad, India',
-    time: '4h ago',
-    tags: ['Full Time', 'Python', 'Azure'],
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/1024px-Microsoft_logo.svg.png'
-  }
-];
+// Floating Animation Helper Component
+const FloatingElement = ({ children, delay = 0, distance = 15, duration = 2500, style }) => {
+  const translateY = useSharedValue(0);
 
-export default function Home() {
+  useEffect(() => {
+    setTimeout(() => {
+      translateY.value = withRepeat(
+        withTiming(-distance, { duration, easing: Easing.inOut(Easing.ease) }),
+        -1,
+        true 
+      );
+    }, delay);
+  }, []);
 
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
+  return (
+    <Animated.View style={[style, animatedStyle]}>
+      {children}
+    </Animated.View>
+  );
+};
+
+export default function WelcomeScreen() {
   const router = useRouter();
-
-  const [activeFilter, setActiveFilter] = useState('All');
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#0B0F19" />
-      
-      {/* HEADER SECTION - Responsive Padding for Android & iOS Notch */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.logoText}>Rojgar<Text style={styles.logoTextOrange}>X</Text></Text>
-          <Text style={styles.subLogoText}>AI POWERED CAREER INTELLIGE...</Text>
-        </View>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.aiCoachBtn} activeOpacity={0.7}>
-            <MaterialCommunityIcons name="robot-outline" size={14} color="#FF6B00" />
-            <Text style={styles.aiCoachText}>AI Coach</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bellIcon}>
-            <Feather name="bell" size={20} color="#D1D5DB" />
-            <View style={styles.notificationDot}>
-              <Text style={styles.dotText}>3</Text>
-            </View>
-          </TouchableOpacity>
-          <View style={styles.profileContainer}>
-            <Image 
-              source={{ uri: 'https://randomuser.me/api/portraits/men/32.jpg' }} 
-              style={styles.profilePic} 
-            />
-            <View style={styles.onlineDot} />
-          </View>
-        </View>
-      </View>
 
-      <ScrollView 
-        showsVerticalScrollIndicator={false} 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-      >
+      {/* BACKGROUND PARTICLES (Premium Floating Icons) */}
+      <FloatingElement delay={0} distance={10} duration={3000} style={styles.particle1}>
+        <Feather name="code" size={24} color="rgba(255, 107, 0, 0.2)" />
+      </FloatingElement>
+      <FloatingElement delay={500} distance={15} duration={4000} style={styles.particle2}>
+        <Feather name="briefcase" size={30} color="rgba(59, 130, 246, 0.2)" />
+      </FloatingElement>
+      <FloatingElement delay={200} distance={12} duration={3500} style={styles.particle3}>
+        <Feather name="star" size={20} color="rgba(16, 185, 129, 0.2)" />
+      </FloatingElement>
+      <FloatingElement delay={800} distance={8} duration={2800} style={styles.particle4}>
+        <Feather name="cpu" size={35} color="rgba(139, 92, 246, 0.2)" />
+      </FloatingElement>
+
+      <View style={styles.content}>
         
-        {/* SEARCH BAR */}
-        <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.searchContainer}>
-          <Feather name="search" size={20} color="#9CA3AF" style={styles.searchIcon} />
-          <TextInput 
-            placeholder="Search by job title, skills..." 
-            placeholderTextColor="#9CA3AF"
-            style={styles.searchInput}
-          />
-          <TouchableOpacity>
-            <Feather name="sliders" size={20} color="#9CA3AF" />
-          </TouchableOpacity>
-        </Animated.View>
-
-        {/* FILTER CHIPS */}
-        <Animated.ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          style={styles.filterScroll}
-          contentContainerStyle={{ paddingRight: 20 }}
-          entering={FadeInRight.delay(200).duration(500)}
+        {/* LOGO & TAGLINE SECTION */}
+        <Animated.View 
+          entering={FadeInDown.delay(200).duration(800).springify()} 
+          style={styles.headerContainer}
         >
-          {filters.map((item, index) => (
-            <TouchableOpacity 
-              key={index} 
-              style={[styles.filterChip, activeFilter === item && styles.activeChip]}
-              onPress={() => setActiveFilter(item)}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.filterText, activeFilter === item && styles.activeFilterText]}>
-                {item}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </Animated.ScrollView>
-
-        {/* RECOMMENDED SECTION HEADER */}
-        <Animated.View entering={FadeInDown.delay(300).duration(500)} style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recommended for You</Text>
-          <TouchableOpacity>
-            <Text style={styles.viewAllText}>View all</Text>
-          </TouchableOpacity>
+          <Text style={styles.logoText}>Rojgar<Text style={styles.logoTextOrange}>X</Text></Text>
+          
+          <View style={styles.taglineBox}>
+            <Text style={styles.tagline}>AI-Powered Career Platform</Text>
+            <Text style={styles.subTagline}>Find Jobs. Get Hired.</Text>
+            <Text style={styles.subTagline}>Build Your Future.</Text>
+          </View>
         </Animated.View>
 
-        {/* JOB CARDS */}
-        {jobs.map((job, index) => (
-          <Animated.View 
-            key={job.id} 
-            entering={FadeInDown.delay(400 + (index * 100)).duration(500)}
-            style={styles.jobCard}
+        {/* 3D / PROFESSIONAL ICON ILLUSTRATION WITH GLOW CARD */}
+        <Animated.View 
+        entering={ZoomIn.delay(500).duration(1000).springify()} 
+        style={styles.imageContainer}
+        >
+        <FloatingElement delay={0} distance={18} duration={2600}>
+            <View style={styles.iconCardGlow}>
+            <Image 
+                source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3242/3242257.png' }} 
+                style={styles.illustrationIcon} 
+            />
+            </View>
+        </FloatingElement>
+        </Animated.View>
+
+        {/* ACTION BUTTONS */}
+        <Animated.View 
+          entering={FadeInUp.delay(800).duration(800).springify()} 
+          style={styles.footerContainer}
+        >
+          <TouchableOpacity 
+            style={styles.primaryBtn} 
+            activeOpacity={0.8}
+            onPress={() => router.replace('/home')} 
           >
-            <View style={styles.jobHeader}>
-              <View style={styles.companyLogoContainer}>
-                <Image source={{ uri: job.logo }} style={styles.companyLogo} />
-              </View>
-              <View style={styles.jobInfo}>
-                <View style={styles.matchBadge}>
-                  <Feather name="trending-up" size={12} color="#00B87C" />
-                  <Text style={styles.matchText}>Highly Matched</Text>
-                </View>
-                <Text style={styles.jobTitle} numberOfLines={1}>{job.role}</Text>
-                <Text style={styles.companyText} numberOfLines={1}>{job.company} • {job.location}</Text>
-              </View>
-              <View style={styles.jobRight}>
-                <TouchableOpacity>
-                  <Feather name="bookmark" size={20} color="#9CA3AF" />
-                </TouchableOpacity>
-                <Text style={styles.salaryText}>{job.salary}</Text>
-                <Text style={styles.timeText}>{job.time}</Text>
-              </View>
-            </View>
-
-            <View style={styles.tagsContainer}>
-              {job.tags.map((tag, idx) => (
-                <View key={idx} style={styles.tag}>
-                  <Text style={styles.tagText}>{tag}</Text>
-                </View>
-              ))}
-            </View>
-          </Animated.View>
-        ))}
-
-        {/* VIEW ALL JOBS BUTTON */}
-        <Animated.View entering={FadeInDown.delay(700).duration(500)}>
-          <TouchableOpacity style={styles.viewAllBtn} activeOpacity={0.8}>
-            <Text style={styles.viewAllBtnText}>View all jobs </Text>
-            <Feather name="arrow-right" size={16} color="#FF6B00" />
+            <Text style={styles.primaryBtnText}>Get Started</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.guestBtn}
+            activeOpacity={0.7}
+            onPress={() => router.replace('/home')}
+          >
+            <Text style={styles.guestBtnText}>Explore as Guest</Text>
           </TouchableOpacity>
         </Animated.View>
 
-      </ScrollView>
-
-      {/* BOTTOM NAVIGATION (Responsive & Fixed at Bottom) */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <Feather name="briefcase" size={22} color="#FF6B00" />
-          <Text style={[styles.navText, { color: '#FF6B00' }]}>Jobs</Text>
-          <View style={styles.activeNavIndicator} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/interview')}>
-          <MaterialCommunityIcons name="clipboard-text-outline" size={24} color="#9CA3AF" />
-          <Text style={styles.navText}>Interview</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/freelance')}>
-          <Feather name="monitor" size={22} color="#9CA3AF" />
-          <Text style={styles.navText}>Freelance</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/degree')}>
-          <Feather name="award" size={22} color="#9CA3AF" />
-          <Text style={styles.navText}>Degree</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -194,295 +119,114 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0F19', 
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    // Android aur iOS dono ke liye safe top padding
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 15 : 50,
-    paddingBottom: 20,
     backgroundColor: '#0B0F19',
+    position: 'relative',
+  },
+  // Particle Positions
+  particle1: { position: 'absolute', top: '15%', left: '10%' },
+  particle2: { position: 'absolute', top: '25%', right: '15%' },
+  particle3: { position: 'absolute', bottom: '35%', left: '15%' },
+  particle4: { position: 'absolute', bottom: '45%', right: '10%' },
+  
+  content: {
+    flex: 1,
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 50 : 80,
+    paddingBottom: Platform.OS === 'ios' ? 50 : 30,
+    zIndex: 1,
+  },
+  headerContainer: {
+    alignItems: 'center',
+    marginTop: 10,
   },
   logoText: {
     color: '#FFF',
-    fontSize: 22,
-    fontWeight: 'bold',
-    letterSpacing: -0.5,
+    fontSize: 42,
+    fontWeight: '900',
+    letterSpacing: -1,
+    marginBottom: 15,
   },
   logoTextOrange: {
     color: '#FF6B00',
   },
-  subLogoText: {
-    color: '#9CA3AF',
-    fontSize: 9,
-    marginTop: 2,
+  taglineBox: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  tagline: {
+    color: '#D1D5DB',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
     letterSpacing: 0.5,
   },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  aiCoachBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#FF6B00',
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    gap: 4,
-    backgroundColor: 'rgba(255, 107, 0, 0.08)',
-  },
-  aiCoachText: {
-    color: '#FF6B00',
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  bellIcon: {
-    position: 'relative',
-  },
-  notificationDot: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    backgroundColor: '#EF4444',
-    borderRadius: 10,
-    width: 14,
-    height: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#0B0F19',
-  },
-  dotText: {
-    color: '#FFF',
-    fontSize: 8,
-    fontWeight: 'bold',
-  },
-  profileContainer: {
-    position: 'relative',
-    marginLeft: 4,
-  },
-  profilePic: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-  },
-  onlineDot: {
-    position: 'absolute',
-    bottom: -2,
-    right: -2,
-    width: 10,
-    height: 10,
-    backgroundColor: '#10B981',
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: '#0B0F19',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    // Bottom padding taaki last job card footer ke peeche na chhupe
-    paddingBottom: 100, 
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#151A28',
-    borderRadius: 12,
-    paddingHorizontal: 15,
-    height: 52,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#1F2937',
-  },
-  searchIcon: {
-    marginRight: 10,
-  },
-  searchInput: {
-    flex: 1,
-    color: '#FFF',
-    fontSize: 14,
-  },
-  filterScroll: {
-    marginBottom: 25,
-  },
-  filterChip: {
-    backgroundColor: '#151A28',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: '#1F2937',
-    alignSelf: 'flex-start',
-  },
-  activeChip: {
-    backgroundColor: '#FF6B00',
-    borderColor: '#FF6B00',
-  },
-  filterText: {
+  subTagline: {
     color: '#9CA3AF',
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '400',
   },
-  activeFilterText: {
-    color: '#FFF',
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  viewAllText: {
-    color: '#FF6B00',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  jobCard: {
-    backgroundColor: '#151A28',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#1F2937',
-  },
-  jobHeader: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  companyLogoContainer: {
-    width: 45,
-    height: 45,
-    backgroundColor: '#1F2937',
-    borderRadius: 12,
+  imageContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
   },
-  companyLogo: {
-    width: 25,
-    height: 25,
+  illustration: {
+    width: width * 0.75,
+    height: width * 0.75,
     resizeMode: 'contain',
   },
-  jobInfo: {
-    flex: 1,
-    paddingRight: 10,
+  footerContainer: {
+    width: '100%',
+    gap: 15,
   },
-  matchBadge: {
-    flexDirection: 'row',
+  primaryBtn: {
+    backgroundColor: '#FF6B00',
+    width: '100%',
+    paddingVertical: 18,
+    borderRadius: 16,
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 184, 124, 0.1)',
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    marginBottom: 6,
-    gap: 4,
+    shadowColor: '#FF6B00',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
   },
-  matchText: {
-    color: '#00B87C',
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  jobTitle: {
+  primaryBtnText: {
     color: '#FFF',
     fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 4,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
   },
-  companyText: {
-    color: '#9CA3AF',
-    fontSize: 12,
-  },
-  jobRight: {
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-  },
-  salaryText: {
-    color: '#FF6B00',
-    fontSize: 12,
-    fontWeight: '700',
-    marginTop: 10,
-  },
-  timeText: {
-    color: '#6B7280',
-    fontSize: 11,
-    marginTop: 4,
-  },
-  tagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  tag: {
-    backgroundColor: '#1F2937',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  tagText: {
-    color: '#D1D5DB',
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  viewAllBtn: {
-    flexDirection: 'row',
+  guestBtn: {
+    width: '100%',
+    paddingVertical: 12,
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#1F2937',
-    gap: 8,
   },
-  viewAllBtnText: {
-    color: '#FF6B00',
-    fontSize: 14,
+  guestBtnText: {
+    color: '#9CA3AF',
+    fontSize: 15,
     fontWeight: '600',
   },
-  bottomNav: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#0B0F19',
-    paddingVertical: Platform.OS === 'ios' ? 25 : 15, // iOS ke bottom swipe indicator ke liye extra jagah
-    borderTopWidth: 1,
-    borderTopColor: '#1F2937',
-  },
-  navItem: {
+
+  iconCardGlow: {
+    width: width * 0.55,
+    height: width * 0.55,
+    backgroundColor: '#151A28',
+    borderRadius: 35,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 6,
-    width: 60,
+    borderWidth: 1,
+    borderColor: '#1F2937',
+    shadowColor: '#FF6B00',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 10,
   },
-  navText: {
-    color: '#9CA3AF',
-    fontSize: 10,
-    fontWeight: '500',
+  illustrationIcon: {
+    width: width * 0.32,
+    height: width * 0.32,
+    resizeMode: 'contain',
   },
-  activeNavIndicator: {
-    position: 'absolute',
-    bottom: Platform.OS === 'ios' ? -25 : -15,
-    width: 35,
-    height: 3,
-    backgroundColor: '#FF6B00',
-    borderTopLeftRadius: 3,
-    borderTopRightRadius: 3,
-  }
 });
