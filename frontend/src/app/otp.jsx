@@ -84,7 +84,7 @@ const OtpScreen = () => {
 
     // Navigate to Home after successful verification
     setTimeout(() => {
-        router.replace('/home');
+        router.replace('/resume');
     }, 2000);
   };
 
